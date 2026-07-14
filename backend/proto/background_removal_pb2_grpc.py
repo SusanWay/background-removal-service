@@ -39,23 +39,12 @@ class BackgroundRemovalServiceStub:
                 request_serializer=proto_dot_background__removal__pb2.GetModelsRequest.SerializeToString,
                 response_deserializer=proto_dot_background__removal__pb2.GetModelsResponse.FromString,
                 _registered_method=True)
-        self.ClearImage = channel.unary_unary(
-                '/background_removal.v1.BackgroundRemovalService/ClearImage',
-                request_serializer=proto_dot_background__removal__pb2.ClearImageRequest.SerializeToString,
-                response_deserializer=proto_dot_background__removal__pb2.ClearImageResponse.FromString,
-                _registered_method=True)
 
 
 class BackgroundRemovalServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def GetModels(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def ClearImage(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -68,11 +57,6 @@ def add_BackgroundRemovalServiceServicer_to_server(servicer, server):
                     servicer.GetModels,
                     request_deserializer=proto_dot_background__removal__pb2.GetModelsRequest.FromString,
                     response_serializer=proto_dot_background__removal__pb2.GetModelsResponse.SerializeToString,
-            ),
-            'ClearImage': grpc.unary_unary_rpc_method_handler(
-                    servicer.ClearImage,
-                    request_deserializer=proto_dot_background__removal__pb2.ClearImageRequest.FromString,
-                    response_serializer=proto_dot_background__removal__pb2.ClearImageResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -102,33 +86,6 @@ class BackgroundRemovalService:
             '/background_removal.v1.BackgroundRemovalService/GetModels',
             proto_dot_background__removal__pb2.GetModelsRequest.SerializeToString,
             proto_dot_background__removal__pb2.GetModelsResponse.FromString,
-            options,
-            channel_credentials,
-            insecure,
-            call_credentials,
-            compression,
-            wait_for_ready,
-            timeout,
-            metadata,
-            _registered_method=True)
-
-    @staticmethod
-    def ClearImage(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(
-            request,
-            target,
-            '/background_removal.v1.BackgroundRemovalService/ClearImage',
-            proto_dot_background__removal__pb2.ClearImageRequest.SerializeToString,
-            proto_dot_background__removal__pb2.ClearImageResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -4,48 +4,16 @@ package background_removal.v1;
 
 service BackgroundRemovalService {
   rpc GetModels(GetModelsRequest) returns (GetModelsResponse);
-  rpc ClearImage(ClearImageRequest) returns (ClearImageResponse);
 }
 
 message GetModelsRequest {}
 
 message ModelInfo {
-  // Уникальный технический ключ модели.
-  // Используется при вызове ClearImage.
   string unique_name = 1;
-
-  // Название для отображения пользователю.
-  string name = 2;
-
-  // Описание скорости, качества и назначения модели.
+  string display_name = 2;
   string description = 3;
 }
 
 message GetModelsResponse {
   repeated ModelInfo models = 1;
-}
-
-message ClearImageRequest {
-  // Содержимое исходного изображения.
-  bytes image = 1;
-
-  // unique_name из ответа GetModels.
-  string model_unique_name = 2;
-
-  // MIME-тип исходного изображения.
-  string content_type = 3;
-}
-
-message ClearImageResponse {
-  // PNG с прозрачным фоном.
-  bytes image = 1;
-
-  // MIME-тип результата.
-  string content_type = 2;
-
-  // Фактически использованная модель.
-  string model_unique_name = 3;
-
-  // Продолжительность инференса.
-  uint64 processing_time_ms = 4;
 }

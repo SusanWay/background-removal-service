@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1eproto/background_removal.proto\x12\x15\x62\x61\x63kground_removal.v1\"\x12\n\x10GetModelsRequest\"C\n\tModelInfo\x12\x13\n\x0bunique_name\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\"E\n\x11GetModelsResponse\x12\x30\n\x06models\x18\x01 \x03(\x0b\x32 .background_removal.v1.ModelInfo\"S\n\x11\x43learImageRequest\x12\r\n\x05image\x18\x01 \x01(\x0c\x12\x19\n\x11model_unique_name\x18\x02 \x01(\t\x12\x14\n\x0c\x63ontent_type\x18\x03 \x01(\t\"p\n\x12\x43learImageResponse\x12\r\n\x05image\x18\x01 \x01(\x0c\x12\x14\n\x0c\x63ontent_type\x18\x02 \x01(\t\x12\x19\n\x11model_unique_name\x18\x03 \x01(\t\x12\x1a\n\x12processing_time_ms\x18\x04 \x01(\x04\x32\xdd\x01\n\x18\x42\x61\x63kgroundRemovalService\x12^\n\tGetModels\x12\'.background_removal.v1.GetModelsRequest\x1a(.background_removal.v1.GetModelsResponse\x12\x61\n\nClearImage\x12(.background_removal.v1.ClearImageRequest\x1a).background_removal.v1.ClearImageResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1eproto/background_removal.proto\x12\x15\x62\x61\x63kground_removal.v1\"\x12\n\x10GetModelsRequest\"K\n\tModelInfo\x12\x13\n\x0bunique_name\x18\x01 \x01(\t\x12\x14\n\x0c\x64isplay_name\x18\x02 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x03 \x01(\t\"E\n\x11GetModelsResponse\x12\x30\n\x06models\x18\x01 \x03(\x0b\x32 .background_removal.v1.ModelInfo2z\n\x18\x42\x61\x63kgroundRemovalService\x12^\n\tGetModels\x12\'.background_removal.v1.GetModelsRequest\x1a(.background_removal.v1.GetModelsResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,13 +34,9 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_GETMODELSREQUEST']._serialized_start=57
   _globals['_GETMODELSREQUEST']._serialized_end=75
   _globals['_MODELINFO']._serialized_start=77
-  _globals['_MODELINFO']._serialized_end=144
-  _globals['_GETMODELSRESPONSE']._serialized_start=146
-  _globals['_GETMODELSRESPONSE']._serialized_end=215
-  _globals['_CLEARIMAGEREQUEST']._serialized_start=217
-  _globals['_CLEARIMAGEREQUEST']._serialized_end=300
-  _globals['_CLEARIMAGERESPONSE']._serialized_start=302
-  _globals['_CLEARIMAGERESPONSE']._serialized_end=414
-  _globals['_BACKGROUNDREMOVALSERVICE']._serialized_start=417
-  _globals['_BACKGROUNDREMOVALSERVICE']._serialized_end=638
+  _globals['_MODELINFO']._serialized_end=152
+  _globals['_GETMODELSRESPONSE']._serialized_start=154
+  _globals['_GETMODELSRESPONSE']._serialized_end=223
+  _globals['_BACKGROUNDREMOVALSERVICE']._serialized_start=225
+  _globals['_BACKGROUNDREMOVALSERVICE']._serialized_end=347
 # @@protoc_insertion_point(module_scope)

@@ -1,0 +1,28 @@
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# Models and cache
+.u2net/
+*.onnx
+
+# Input and generated images
+input/*
+output/*
+
+# Keep directories
+!input/.gitkeep
+!output/.gitkeep
+
+# Environment
+.env

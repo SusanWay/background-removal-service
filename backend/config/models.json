@@ -1,0 +1,20 @@
+{
+  "models": [
+    {
+      "unique_name": "u2netp",
+      "name": "Быстрая обработка",
+      "description": "Быстрая модель с базовым качеством для изображений с контрастным фоном.",
+      "provider": "rembg",
+      "provider_model_name": "u2netp",
+      "enabled": true
+    },
+    {
+      "unique_name": "birefnet-general-lite",
+      "name": "Точная обработка",
+      "description": "Более точная модель для сложных объектов и мелких деталей.",
+      "provider": "rembg",
+      "provider_model_name": "birefnet-general-lite",
+      "enabled": false
+    }
+  ]
+}

@@ -1,20 +1,40 @@
-$color-background: #f4f6fb;
+// Backgrounds
+$color-background: #f7f7f8;
 $color-surface: #ffffff;
-$color-primary: #6c5ce7;
-$color-primary-light: #f0edff;
-$color-primary-hover: #5948d5;
-$color-success: #22a06b;
-$color-text: #20212a;
-$color-text-secondary: #667085;
-$color-border: #dfe3eb;
-$color-border-light: #eaecf0;
+$color-surface-secondary: #f0f0f2;
 
+// Brand colors
+$color-primary: #ff4365;
+$color-primary-hover: #e93657;
+$color-primary-light: #fff0f3;
+
+$color-secondary: #4263eb;
+$color-secondary-light: #edf1ff;
+
+$color-accent: #ffc83d;
+$color-success: #18a66a;
+
+// Text
+$color-text: #202124;
+$color-text-secondary: #686b73;
+$color-text-light: #93969d;
+
+// Borders
+$color-border: #d7d8dc;
+$color-border-light: #e8e8eb;
+
+// Layout
 $container-width: 1200px;
 
+// Border radius
 $border-radius-small: 8px;
-$border-radius-medium: 16px;
-$border-radius-large: 24px;
+$border-radius-medium: 14px;
+$border-radius-large: 20px;
 
-$shadow-card: 0 24px 70px rgb(32 33 42 / 10%);
+// Shadows
+$shadow-card:
+        0 2px 8px rgb(32 33 36 / 6%),
+        0 20px 50px rgb(32 33 36 / 8%);
 
-$transition-default: 200ms ease;
+// Transitions
+$transition-default: 180ms ease;

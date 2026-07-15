@@ -5,5 +5,7 @@
     <main class="app-layout__main">
       <slot />
     </main>
+
+    <AppFooter />
   </div>
 </template>

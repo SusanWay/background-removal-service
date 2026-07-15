@@ -1,0 +1,130 @@
+@use "../../variables" as *;
+
+.faq {
+  padding: 100px 0;
+  background: $color-background;
+  scroll-margin-top: 68px;
+
+  &__container {
+    display: grid;
+    align-items: start;
+    gap: 80px;
+    grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);
+  }
+
+  &__heading {
+    position: sticky;
+    top: 100px;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__item {
+    overflow: hidden;
+    border: 1px solid $color-border-light;
+    border-radius: $border-radius-medium;
+    background: $color-surface;
+    transition: border-color $transition-default;
+
+    &[open] {
+      border-color: $color-primary;
+    }
+  }
+
+  &__question {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 22px;
+    color: $color-text;
+    cursor: pointer;
+    font-weight: 700;
+    gap: 20px;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: -2px;
+    }
+  }
+
+  &__icon {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto;
+
+    &::before,
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 14px;
+      height: 2px;
+      background: $color-primary;
+      content: "";
+      transform: translate(-50%, -50%);
+      transition: transform $transition-default;
+    }
+
+    &::after {
+      transform: translate(-50%, -50%) rotate(90deg);
+    }
+  }
+
+  &__item[open] &__icon::after {
+    transform: translate(-50%, -50%);
+  }
+
+  &__answer {
+    padding: 0 22px 22px;
+    color: $color-text-secondary;
+    line-height: 1.65;
+
+    p {
+      margin: 0;
+    }
+  }
+}
+
+@media (width <= 950px) {
+  .faq {
+    &__container {
+      gap: 48px;
+      grid-template-columns: 1fr;
+    }
+
+    &__heading {
+      position: static;
+    }
+  }
+}
+
+@media (width <= 600px) {
+  .faq {
+    padding: 72px 0;
+    scroll-margin-top: 62px;
+
+    &__container {
+      gap: 36px;
+    }
+
+    &__question {
+      min-height: 64px;
+      padding: 18px;
+    }
+
+    &__answer {
+      padding: 0 18px 18px;
+    }
+  }
+}

@@ -1,64 +1,146 @@
 @use "../variables" as *;
 
 .app-header {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  z-index: 100;
+  top: 0;
   border-bottom: 1px solid $color-border-light;
-  background: rgb(255 255 255 / 85%);
-  backdrop-filter: blur(16px);
+  background: rgb(255 255 255 / 92%);
+  backdrop-filter: blur(14px);
 
   &__container {
     display: flex;
-    min-height: 72px;
+    min-height: 68px;
     align-items: center;
     justify-content: space-between;
+    gap: 24px;
   }
 
   &__logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    flex: 0 0 auto;
+    gap: 11px;
   }
 
   &__logo-icon {
     display: grid;
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
     background: $color-primary;
+    box-shadow: 5px 5px 0 $color-accent;
     color: #ffffff;
     font-size: 18px;
     font-weight: 800;
     place-items: center;
+    transform: rotate(-3deg);
   }
 
   &__logo-text {
+    color: $color-text;
     font-size: 20px;
     font-weight: 750;
+    letter-spacing: -0.03em;
+  }
+
+  &__navigation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  &__navigation-link {
+    padding: 9px 12px;
+    border-radius: $border-radius-small;
+    color: $color-text-secondary;
+    font-size: 13px;
+    font-weight: 650;
+    white-space: nowrap;
+    transition:
+            background-color $transition-default,
+            color $transition-default;
+
+    &:hover {
+      background: $color-primary-light;
+      color: $color-primary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: 2px;
+    }
   }
 
   &__status {
     display: flex;
     align-items: center;
+    padding: 7px 11px;
+    border-radius: 100px;
+    background: #effaf5;
+    color: $color-success;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 650;
     gap: 8px;
-    color: $color-text-secondary;
-    font-size: 13px;
-    font-weight: 500;
   }
 
   &__status-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
     background: $color-success;
-    box-shadow: 0 0 0 4px rgb(34 160 107 / 12%);
+  }
+}
+
+@media (width <= 800px) {
+  .app-header {
+    &__status {
+      display: none;
+    }
   }
 }
 
 @media (width <= 600px) {
   .app-header {
-    &__status {
-      font-size: 0;
+    &__container {
+      min-height: 62px;
+      gap: 14px;
+    }
+
+    &__logo-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      box-shadow: 4px 4px 0 $color-accent;
+      font-size: 16px;
+    }
+
+    &__logo-text {
+      display: none;
+    }
+
+    &__navigation {
+      margin-left: auto;
+    }
+
+    &__navigation-link {
+      padding: 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+@media (width <= 390px) {
+  .app-header {
+    &__navigation {
+      gap: 0;
+    }
+
+    &__navigation-link {
+      padding: 7px 6px;
+      font-size: 11px;
     }
   }
 }

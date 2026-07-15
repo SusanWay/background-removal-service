@@ -1,0 +1,103 @@
+@use "../../variables" as *;
+
+.home-hero {
+  &__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    background: $color-primary-light;
+    color: $color-primary;
+    font-size: 13px;
+    font-weight: 700;
+    gap: 8px;
+  }
+
+  &__label-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: $color-primary;
+  }
+
+  &__title {
+    max-width: 680px;
+    margin: 0;
+    color: $color-text;
+    font-size: clamp(46px, 5vw, 68px);
+    font-weight: 780;
+    letter-spacing: -0.05em;
+    line-height: 1.03;
+  }
+
+  &__title-accent {
+    display: block;
+    color: $color-primary;
+  }
+
+  &__description {
+    max-width: 590px;
+    margin: 28px 0 0;
+    color: $color-text-secondary;
+    font-size: 18px;
+    line-height: 1.65;
+  }
+
+  &__advantages {
+    display: flex;
+    margin-top: 42px;
+    gap: 12px;
+  }
+
+  &__advantage {
+    display: flex;
+    min-width: 132px;
+    padding: 14px 16px;
+    border: 1px solid $color-border-light;
+    border-radius: $border-radius-medium;
+    background: rgb(255 255 255 / 75%);
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__advantage-value {
+    color: $color-text;
+    font-size: 18px;
+    font-weight: 750;
+  }
+
+  &__advantage-label {
+    color: $color-text-secondary;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+}
+
+@media (width <= 950px) {
+  .home-hero {
+    max-width: 720px;
+  }
+}
+
+@media (width <= 600px) {
+  .home-hero {
+    &__title {
+      font-size: 42px;
+    }
+
+    &__description {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+
+    &__advantages {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &__advantage {
+      min-width: 0;
+    }
+  }
+}

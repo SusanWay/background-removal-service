@@ -14,6 +14,25 @@
         </span>
       </NuxtLink>
 
+      <nav
+          class="app-header__navigation"
+          aria-label="Навигация по странице"
+      >
+        <a
+            class="app-header__navigation-link"
+            href="#how-it-works"
+        >
+          Как пользоваться
+        </a>
+
+        <a
+            class="app-header__navigation-link"
+            href="#faq"
+        >
+          Частые вопросы
+        </a>
+      </nav>
+
       <div class="app-header__status">
         <span class="app-header__status-dot" />
 

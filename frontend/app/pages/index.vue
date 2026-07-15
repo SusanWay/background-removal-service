@@ -8,9 +8,14 @@ useSeoMeta({
 
 <template>
   <div class="home-page">
-    <div class="container home-page__container">
-      <HomeHeroSection />
-      <HomeUploadCard />
-    </div>
+    <section class="home-page__workspace">
+      <div class="container home-page__workspace-container">
+        <HomeHeroSection />
+        <HomeUploadCard />
+      </div>
+    </section>
+
+    <HomeHowItWorks />
+    <HomeFaqSection />
   </div>
 </template>

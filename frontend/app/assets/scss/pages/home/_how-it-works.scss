@@ -1,0 +1,84 @@
+@use "../../variables" as *;
+
+.how-it-works {
+  padding: 100px 0;
+  background: $color-surface;
+  scroll-margin-top: 68px;
+
+  &__grid {
+    display: grid;
+    margin-top: 52px;
+    gap: 20px;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &__item {
+    position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    padding: 30px;
+    border: 1px solid $color-border-light;
+    border-radius: $border-radius-large;
+    background: $color-background;
+
+    &:nth-child(2) {
+      background: $color-primary-light;
+    }
+
+    &:nth-child(3) {
+      background: $color-secondary-light;
+    }
+  }
+
+  &__number {
+    display: block;
+    margin-bottom: 45px;
+    color: $color-primary;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  &__title {
+    margin: 0;
+    color: $color-text;
+    font-size: 21px;
+    letter-spacing: -0.02em;
+  }
+
+  &__description {
+    margin: 12px 0 0;
+    color: $color-text-secondary;
+    line-height: 1.6;
+  }
+}
+
+@media (width <= 950px) {
+  .how-it-works {
+    &__grid {
+      grid-template-columns: 1fr;
+    }
+
+    &__item {
+      min-height: auto;
+    }
+
+    &__number {
+      margin-bottom: 28px;
+    }
+  }
+}
+
+@media (width <= 600px) {
+  .how-it-works {
+    padding: 72px 0;
+    scroll-margin-top: 62px;
+
+    &__grid {
+      margin-top: 36px;
+    }
+
+    &__item {
+      padding: 24px;
+    }
+  }
+}

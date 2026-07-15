@@ -122,7 +122,8 @@ export default defineEventHandler(async (event) => {
                 throw createError({
                     statusCode: 404,
                     statusMessage:
-                        error.details || "Выбранная модель не найдена",
+                        error.details ||
+                        "Выбранная модель не найдена",
                 });
             }
 
@@ -130,15 +131,17 @@ export default defineEventHandler(async (event) => {
                 throw createError({
                     statusCode: 400,
                     statusMessage:
-                        error.details || "Некорректные данные запроса",
+                        error.details ||
+                        "Некорректные данные запроса",
                 });
             }
 
             if (error.code === grpcStatus.RESOURCE_EXHAUSTED) {
                 throw createError({
-                    statusCode: 413,
+                    statusCode: 429,
                     statusMessage:
-                        "Изображение или результат превышает допустимый размер",
+                        error.details ||
+                        "Сервис сейчас занят обработкой другого изображения",
                 });
             }
 
@@ -161,7 +164,8 @@ export default defineEventHandler(async (event) => {
             throw createError({
                 statusCode: 502,
                 statusMessage:
-                    error.details || "Ошибка Python-сервиса",
+                    error.details ||
+                    "Ошибка Python-сервиса",
             });
         }
 

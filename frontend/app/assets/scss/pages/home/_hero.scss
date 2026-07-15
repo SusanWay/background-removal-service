@@ -1,103 +1,59 @@
 @use "../../variables" as *;
 
 .home-hero {
-  &__label {
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 12px;
-    border-radius: 8px;
-    margin-bottom: 24px;
-    background: $color-primary-light;
-    color: $color-primary;
-    font-size: 13px;
-    font-weight: 700;
-    gap: 8px;
-  }
-
-  &__label-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: $color-primary;
-  }
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-items: end;
+  gap: 60px;
+  grid-template-columns: minmax(0, 1fr) 430px;
 
   &__title {
-    max-width: 680px;
     margin: 0;
     color: $color-text;
-    font-size: clamp(46px, 5vw, 68px);
+    font-size: clamp(42px, 3.4vw, 58px);
     font-weight: 780;
-    letter-spacing: -0.05em;
-    line-height: 1.03;
+    letter-spacing: -0.055em;
+    line-height: 1;
   }
 
   &__title-accent {
-    display: block;
     color: $color-primary;
   }
 
   &__description {
-    max-width: 590px;
-    margin: 28px 0 0;
+    margin: 0 0 2px;
     color: $color-text-secondary;
-    font-size: 18px;
-    line-height: 1.65;
-  }
-
-  &__advantages {
-    display: flex;
-    margin-top: 42px;
-    gap: 12px;
-  }
-
-  &__advantage {
-    display: flex;
-    min-width: 132px;
-    padding: 14px 16px;
-    border: 1px solid $color-border-light;
-    border-radius: $border-radius-medium;
-    background: rgb(255 255 255 / 75%);
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  &__advantage-value {
-    color: $color-text;
-    font-size: 18px;
-    font-weight: 750;
-  }
-
-  &__advantage-label {
-    color: $color-text-secondary;
-    font-size: 11px;
-    line-height: 1.35;
+    font-size: 17px;
+    line-height: 1.55;
   }
 }
 
-@media (width <= 950px) {
+@media (width <= 1050px) {
   .home-hero {
-    max-width: 720px;
+    display: block;
+
+    &__description {
+      max-width: 650px;
+      margin-top: 16px;
+    }
   }
 }
 
 @media (width <= 600px) {
   .home-hero {
     &__title {
-      font-size: 42px;
+      font-size: 38px;
+      line-height: 1.05;
+    }
+
+    &__title-accent {
+      display: block;
     }
 
     &__description {
-      margin-top: 20px;
-      font-size: 16px;
-    }
-
-    &__advantages {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    &__advantage {
-      min-width: 0;
+      margin-top: 14px;
+      font-size: 15px;
     }
   }
 }

@@ -1,0 +1,126 @@
+@use "../../variables" as *;
+
+.result-panel {
+  &__body {
+    display: flex;
+    height: 100%;
+    padding: 14px;
+    flex-direction: column;
+  }
+
+  &__preview {
+    display: flex;
+    min-height: clamp(310px, 35svh, 390px);
+    flex: 1;
+  }
+
+  &__placeholder {
+    display: flex;
+    width: 100%;
+    min-height: clamp(310px, 35svh, 390px);
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border: 1px solid $color-border-light;
+    border-radius: 14px;
+    background:
+            repeating-conic-gradient(
+                            #e4e5e8 0% 25%,
+                            #ffffff 0% 50%
+            )
+            0 0 / 24px 24px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  &__placeholder-icon {
+    display: grid;
+    width: 66px;
+    height: 66px;
+    margin-bottom: 20px;
+    border: 1px solid $color-border;
+    border-radius: 19px;
+    background: rgb(255 255 255 / 94%);
+    box-shadow: 0 8px 22px rgb(32 33 36 / 10%);
+    color: $color-text-secondary;
+    place-items: center;
+
+    svg {
+      width: 30px;
+      height: 30px;
+      fill: none;
+      stroke: currentcolor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.6;
+    }
+  }
+
+  &__placeholder-title {
+    padding: 7px 12px;
+    border-radius: 7px;
+    margin: 0;
+    background: rgb(255 255 255 / 90%);
+    color: $color-text;
+    font-size: 21px;
+    letter-spacing: -0.025em;
+  }
+
+  &__placeholder-description {
+    padding: 5px 10px;
+    border-radius: 6px;
+    margin: 5px 0 0;
+    background: rgb(255 255 255 / 86%);
+    color: $color-text-secondary;
+    font-size: 14px;
+  }
+
+  &__information {
+    display: flex;
+    min-height: 58px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 3px 0;
+    color: $color-text-secondary;
+    font-size: 12px;
+    font-weight: 650;
+    gap: 16px;
+  }
+
+  &__information-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  &__information-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-success;
+    box-shadow: 0 0 0 4px rgb(24 166 106 / 12%);
+  }
+}
+
+@media (width <= 600px) {
+  .result-panel {
+    &__body {
+      padding: 12px;
+    }
+
+    &__preview,
+    &__placeholder {
+      min-height: 310px;
+    }
+
+    &__placeholder {
+      padding: 26px 16px;
+    }
+
+    &__information {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 9px;
+    }
+  }
+}

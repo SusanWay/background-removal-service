@@ -1,0 +1,239 @@
+@use "../../variables" as *;
+
+.model-selector {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1px solid $color-border;
+  border-radius: $border-radius-large;
+  background: $color-surface;
+  box-shadow:
+          0 3px 8px rgb(32 33 36 / 6%),
+          0 14px 34px rgb(32 33 36 / 7%);
+
+  &__top {
+    display: grid;
+    align-items: center;
+    gap: 30px;
+    grid-template-columns: 290px minmax(0, 1fr);
+  }
+
+  &__heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  &__step {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: $color-primary-light;
+    color: $color-primary;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 800;
+    place-items: center;
+  }
+
+  &__title {
+    margin: 0;
+    color: $color-text;
+    font-size: 19px;
+    letter-spacing: -0.025em;
+  }
+
+  &__subtitle {
+    margin: 4px 0 0;
+    color: $color-text-secondary;
+    font-size: 12px;
+  }
+
+  &__control {
+    display: grid;
+    overflow: hidden;
+    padding: 4px;
+    border: 1px solid $color-border;
+    border-radius: 11px;
+    background: $color-surface-secondary;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  &__button {
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: $color-text-secondary;
+    font-size: 14px;
+    font-weight: 700;
+    transition:
+            background-color $transition-default,
+            box-shadow $transition-default,
+            color $transition-default;
+
+    &:hover:not(&--active) {
+      color: $color-text;
+    }
+
+    &--active {
+      background: $color-surface;
+      box-shadow: 0 2px 7px rgb(32 33 36 / 10%);
+      color: $color-primary;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $color-primary;
+      outline-offset: -2px;
+    }
+  }
+
+  &__description {
+    display: grid;
+    min-height: 70px;
+    align-items: center;
+    padding: 17px 3px 0;
+    gap: 30px;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  &__description-main {
+    display: grid;
+    align-items: baseline;
+    gap: 6px 12px;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  &__model-name {
+    color: $color-primary;
+    font-size: 12px;
+    font-weight: 750;
+    grid-column: 1;
+    white-space: nowrap;
+  }
+
+  &__model-text {
+    margin: 0;
+    color: $color-text;
+    font-size: 14px;
+    line-height: 1.5;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  &__best-for {
+    margin: 0;
+    color: $color-text-secondary;
+    font-size: 12px;
+    line-height: 1.5;
+    grid-column: 1 / -1;
+
+    strong {
+      color: $color-text;
+    }
+  }
+
+  &__properties {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__property {
+    display: flex;
+    min-width: 112px;
+    padding: 10px 13px;
+    border-radius: 9px;
+    background: $color-background;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  &__property-label {
+    color: $color-text-secondary;
+    font-size: 10px;
+  }
+
+  &__property-value {
+    color: $color-text;
+    font-size: 12px;
+  }
+}
+
+.model-description {
+  &-enter-active,
+  &-leave-active {
+    transition:
+            opacity $transition-default,
+            transform $transition-default;
+  }
+
+  &-enter-from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  &-leave-to {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+}
+
+@media (width <= 950px) {
+  .model-selector {
+    &__top {
+      gap: 18px;
+      grid-template-columns: 1fr;
+    }
+
+    &__description {
+      align-items: start;
+      gap: 18px;
+      grid-template-columns: 1fr;
+    }
+
+    &__description-main {
+      display: block;
+    }
+
+    &__model-text {
+      margin-top: 7px;
+    }
+
+    &__best-for {
+      margin-top: 7px;
+    }
+  }
+}
+
+@media (width <= 600px) {
+  .model-selector {
+    padding: 16px;
+
+    &__top {
+      gap: 16px;
+    }
+
+    &__control {
+      grid-template-columns: 1fr;
+    }
+
+    &__button {
+      min-height: 42px;
+    }
+
+    &__description {
+      padding-top: 16px;
+    }
+
+    &__properties {
+      display: grid;
+      width: 100%;
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    &__property {
+      min-width: 0;
+    }
+  }
+}

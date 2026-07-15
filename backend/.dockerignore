@@ -1,0 +1,14 @@
+.venv
+__pycache__
+*.py[cod]
+.idea
+.vscode
+.git
+.gitignore
+
+input
+output
+research
+
+*.log
+.env

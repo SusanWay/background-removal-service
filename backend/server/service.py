@@ -29,9 +29,10 @@ class BackgroundRemovalService(
         self._model_registry = model_registry
         self._background_remover = background_remover
 
-        # На VPS одновременно выполняется только один инференс.
-        # Остальные запросы ожидают освобождения семафора.
-        self._inference_semaphore = asyncio.Semaphore(1)
+        # Очередь запросов не используется.
+        # Пока выполняется один инференс, остальные запросы
+        # сразу получают ошибку RESOURCE_EXHAUSTED.
+        self._is_processing = False
 
     async def GetModels(
         self,
@@ -74,29 +75,64 @@ class BackgroundRemovalService(
                 "Название модели не передано",
             )
 
+        # Проверка и переключение выполняются без await между ними.
+        # В рамках одного asyncio event loop другой обработчик
+        # не сможет вклиниться между этими операциями.
+        if self._is_processing:
+            await context.abort(
+                grpc.StatusCode.RESOURCE_EXHAUSTED,
+                (
+                    "Сервис уже обрабатывает другое изображение. "
+                    "Повторите попытку после завершения текущей обработки."
+                ),
+            )
+
+        self._is_processing = True
+
         request_size_mb = len(request.image) / 1024 / 1024
         started_at = perf_counter()
 
         logger.info(
-            "Запрос на обработку: model=%s, input_size=%.2f MB",
+            "Начало запроса: model=%s, input_size=%.2f MB",
             request.model_name,
             request_size_mb,
         )
 
         try:
-            async with self._inference_semaphore:
-                logger.info(
-                    "Начало инференса: model=%s",
-                    request.model_name,
-                )
+            result_bytes = await asyncio.to_thread(
+                self._background_remover.remove_background,
+                request.image,
+                request.model_name,
+            )
 
-                result_bytes = await asyncio.to_thread(
-                    self._background_remover.remove_background,
-                    request.image,
-                    request.model_name,
-                )
+            processing_time_ms = int(
+                (perf_counter() - started_at) * 1000
+            )
+
+            result_size_mb = len(result_bytes) / 1024 / 1024
+
+            logger.info(
+                "Обработка завершена: "
+                "model=%s, input_size=%.2f MB, "
+                "output_size=%.2f MB, processing_time=%s ms",
+                request.model_name,
+                request_size_mb,
+                result_size_mb,
+                processing_time_ms,
+            )
+
+            return background_removal_pb2.RemoveBackgroundResponse(
+                image=result_bytes,
+                model_name=request.model_name,
+                processing_time_ms=processing_time_ms,
+            )
 
         except ModelNotFoundError as error:
+            logger.warning(
+                "Запрошена неизвестная модель: %s",
+                request.model_name,
+            )
+
             await context.abort(
                 grpc.StatusCode.NOT_FOUND,
                 str(error),
@@ -114,42 +150,30 @@ class BackgroundRemovalService(
 
         except MemoryError:
             logger.exception(
-                "Недостаточно оперативной памяти для обработки изображения",
+                "Недостаточно оперативной памяти",
             )
 
             await context.abort(
                 grpc.StatusCode.RESOURCE_EXHAUSTED,
-                "Недостаточно оперативной памяти для обработки изображения",
+                (
+                    "Недостаточно оперативной памяти "
+                    "для обработки изображения."
+                ),
             )
 
         except Exception:
             logger.exception(
-                "Непредвиденная ошибка при обработке изображения",
+                "Ошибка при обработке изображения",
             )
 
             await context.abort(
                 grpc.StatusCode.INTERNAL,
-                "Не удалось обработать изображение",
+                "Не удалось обработать изображение.",
             )
 
-        processing_time_ms = int(
-            (perf_counter() - started_at) * 1000
-        )
+        finally:
+            self._is_processing = False
 
-        result_size_mb = len(result_bytes) / 1024 / 1024
-
-        logger.info(
-            "Обработка завершена: "
-            "model=%s, input_size=%.2f MB, "
-            "output_size=%.2f MB, processing_time=%s ms",
-            request.model_name,
-            request_size_mb,
-            result_size_mb,
-            processing_time_ms,
-        )
-
-        return background_removal_pb2.RemoveBackgroundResponse(
-            image=result_bytes,
-            model_name=request.model_name,
-            processing_time_ms=processing_time_ms,
-        )
+            logger.info(
+                "Backend готов принять следующий запрос",
+            )

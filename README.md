@@ -146,7 +146,7 @@ sequenceDiagram
 
 ### Backend
 
-- Python 3.12;
+- Python 3.11;
 - асинхронный сервер на `grpc.aio`;
 - общий Protocol Buffers-контракт;
 - `ModelRegistry` для управления доступными моделями;
@@ -157,15 +157,15 @@ sequenceDiagram
 
 ## Технологии
 
-| Слой | Технологии |
-|---|---|
+| Слой | Технологии                      |
+|---|---------------------------------|
 | Интерфейс | Nuxt 4, Vue 3, TypeScript, SCSS |
-| Состояние | Pinia |
-| BFF | Nitro Server API |
-| Транспорт | gRPC, Protocol Buffers |
-| ML-сервис | Python 3.12, `grpc.aio` |
-| Инференс | rembg, ONNX Runtime |
-| Инфраструктура | Docker, Docker Compose, Nginx |
+| Состояние | Pinia                           |
+| BFF | Nitro Server API                |
+| Транспорт | gRPC, Protocol Buffers          |
+| ML-сервис | Python 3.11, `grpc.aio`         |
+| Инференс | rembg, ONNX Runtime             |
+| Инфраструктура | Docker, Docker Compose, Nginx   |
 
 ## Структура проекта
 
@@ -351,14 +351,3 @@ rpc RemoveBackground(RemoveBackgroundRequest)
 - общий Docker Compose;
 - health checks и корректное ожидание готовности сервисов;
 - Nginx как единственная внешняя точка входа.
-
-## Дальнейшее развитие
-
-- HTTPS и автоматическое получение сертификатов;
-- benchmark моделей по скорости, памяти и качеству;
-- ограничение количества одновременных инференсов;
-- метрики Prometheus и дашборды Grafana;
-- очередь обработки тяжёлых запросов;
-- ручная корректировка маски;
-- пакетная обработка изображений;
-- оптимизация моделей и квантование ONNX.

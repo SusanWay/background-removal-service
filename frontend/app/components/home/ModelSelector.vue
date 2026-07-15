@@ -1,17 +1,12 @@
 <script setup lang="ts">
-interface ProcessingModel {
-  uniqueName: string;
-  name: string;
-  shortName: string;
-  description: string;
-  bestFor: string;
-  speed: string;
-  quality: string;
-}
+import type {
+  ProcessingModel,
+} from "~/stores/models";
 
 defineProps<{
   models: ProcessingModel[];
   selectedModel?: ProcessingModel;
+  isLoading?: boolean;
 }>();
 
 const modelValue = defineModel<string>({
@@ -29,19 +24,20 @@ const modelValue = defineModel<string>({
 
         <div>
           <h2 class="model-selector__title">
-            Выберите модель
+            Выберите режим
           </h2>
 
           <p class="model-selector__subtitle">
-            Скорость или максимальная точность
+            Настройте баланс скорости и качества
           </p>
         </div>
       </div>
 
       <div
+          v-if="models.length"
           class="model-selector__control"
-          role="group"
-          aria-label="Модель обработки изображения"
+          role="radiogroup"
+          aria-label="Режим обработки изображения"
       >
         <button
             v-for="model in models"
@@ -52,12 +48,20 @@ const modelValue = defineModel<string>({
               modelValue === model.uniqueName,
           }"
             type="button"
-            :aria-pressed="modelValue === model.uniqueName"
+            role="radio"
+            :aria-checked="modelValue === model.uniqueName"
             @click="modelValue = model.uniqueName"
         >
-          {{ model.shortName }}
+          {{ model.name }}
         </button>
       </div>
+
+      <p
+          v-else-if="isLoading"
+          class="model-selector__status"
+      >
+        Загружаем доступные модели...
+      </p>
     </div>
 
     <Transition
@@ -71,7 +75,7 @@ const modelValue = defineModel<string>({
       >
         <div class="model-selector__description-main">
           <span class="model-selector__model-name">
-            {{ selectedModel.name }}
+            {{ selectedModel.fullName }}
           </span>
 
           <p class="model-selector__model-text">
@@ -80,6 +84,7 @@ const modelValue = defineModel<string>({
 
           <p class="model-selector__best-for">
             <strong>Подходит для:</strong>
+
             {{ selectedModel.bestFor }}
           </p>
         </div>

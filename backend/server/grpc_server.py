@@ -7,7 +7,7 @@ from proto import background_removal_pb2_grpc
 from server.service import BackgroundRemovalService
 
 
-GRPC_HOST = "[::]"
+GRPC_HOST = "0.0.0.0"
 GRPC_PORT = 50051
 
 

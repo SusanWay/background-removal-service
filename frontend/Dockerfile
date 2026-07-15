@@ -1,9 +1,13 @@
-FROM node:24-alpine AS dependencies
+FROM node:24-alpine AS base
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 
-RUN corepack enable
+RUN corepack enable \
+    && corepack install --global pnpm@10.28.2
+
+
+FROM base AS dependencies
 
 WORKDIR /app
 
@@ -12,12 +16,7 @@ COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 
-FROM node:24-alpine AS builder
-
-ENV PNPM_HOME=/pnpm
-ENV PATH=$PNPM_HOME:$PATH
-
-RUN corepack enable
+FROM base AS builder
 
 WORKDIR /app
 

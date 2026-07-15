@@ -4,6 +4,9 @@ package background_removal.v1;
 
 service BackgroundRemovalService {
   rpc GetModels(GetModelsRequest) returns (GetModelsResponse);
+
+  rpc RemoveBackground(RemoveBackgroundRequest)
+      returns (RemoveBackgroundResponse);
 }
 
 message GetModelsRequest {}
@@ -16,4 +19,15 @@ message ModelInfo {
 
 message GetModelsResponse {
   repeated ModelInfo models = 1;
+}
+
+message RemoveBackgroundRequest {
+  bytes image = 1;
+  string model_name = 2;
+}
+
+message RemoveBackgroundResponse {
+  bytes image = 1;
+  string model_name = 2;
+  uint64 processing_time_ms = 3;
 }

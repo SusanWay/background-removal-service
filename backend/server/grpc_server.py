@@ -1,6 +1,7 @@
 import grpc
 
 from config.settings import load_models_config
+from models.background_remover import BackgroundRemover
 from models.registry import ModelRegistry
 from proto import background_removal_pb2_grpc
 from server.service import BackgroundRemovalService
@@ -16,10 +17,15 @@ async def run_grpc_server() -> None:
     models = load_models_config()
     model_registry = ModelRegistry(models)
 
+    background_remover = BackgroundRemover(
+        model_registry=model_registry,
+    )
+
     grpc_server = grpc.aio.server()
 
     service = BackgroundRemovalService(
         model_registry=model_registry,
+        background_remover=background_remover,
     )
 
     background_removal_pb2_grpc.add_BackgroundRemovalServiceServicer_to_server(

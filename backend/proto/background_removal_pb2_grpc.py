@@ -39,12 +39,23 @@ class BackgroundRemovalServiceStub:
                 request_serializer=proto_dot_background__removal__pb2.GetModelsRequest.SerializeToString,
                 response_deserializer=proto_dot_background__removal__pb2.GetModelsResponse.FromString,
                 _registered_method=True)
+        self.RemoveBackground = channel.unary_unary(
+                '/background_removal.v1.BackgroundRemovalService/RemoveBackground',
+                request_serializer=proto_dot_background__removal__pb2.RemoveBackgroundRequest.SerializeToString,
+                response_deserializer=proto_dot_background__removal__pb2.RemoveBackgroundResponse.FromString,
+                _registered_method=True)
 
 
 class BackgroundRemovalServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def GetModels(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RemoveBackground(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -57,6 +68,11 @@ def add_BackgroundRemovalServiceServicer_to_server(servicer, server):
                     servicer.GetModels,
                     request_deserializer=proto_dot_background__removal__pb2.GetModelsRequest.FromString,
                     response_serializer=proto_dot_background__removal__pb2.GetModelsResponse.SerializeToString,
+            ),
+            'RemoveBackground': grpc.unary_unary_rpc_method_handler(
+                    servicer.RemoveBackground,
+                    request_deserializer=proto_dot_background__removal__pb2.RemoveBackgroundRequest.FromString,
+                    response_serializer=proto_dot_background__removal__pb2.RemoveBackgroundResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -86,6 +102,33 @@ class BackgroundRemovalService:
             '/background_removal.v1.BackgroundRemovalService/GetModels',
             proto_dot_background__removal__pb2.GetModelsRequest.SerializeToString,
             proto_dot_background__removal__pb2.GetModelsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def RemoveBackground(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/background_removal.v1.BackgroundRemovalService/RemoveBackground',
+            proto_dot_background__removal__pb2.RemoveBackgroundRequest.SerializeToString,
+            proto_dot_background__removal__pb2.RemoveBackgroundResponse.FromString,
             options,
             channel_credentials,
             insecure,

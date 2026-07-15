@@ -17,4 +17,11 @@ COPY backend/ ./
 
 EXPOSE 50051
 
+HEALTHCHECK \
+    --interval=15s \
+    --timeout=10s \
+    --start-period=10m \
+    --retries=3 \
+    CMD ["python", "healthcheck.py"]
+
 CMD ["python", "main.py"]

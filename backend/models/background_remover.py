@@ -19,10 +19,10 @@ class UnsupportedProviderError(Exception):
 
 class BackgroundRemover:
     """
-    Загружает модель непосредственно перед обработкой изображения.
+    Загружает модель отдельно для каждой обработки.
 
-    После обработки ONNX-сессия удаляется, чтобы не хранить
-    модель в оперативной памяти между запросами.
+    После завершения обработки ONNX-сессия удаляется,
+    а свободная память по возможности возвращается Linux.
     """
 
     def __init__(
@@ -36,7 +36,7 @@ class BackgroundRemover:
         image_bytes: bytes,
         model_name: str,
     ) -> bytes:
-        """Загружает модель, удаляет фон и освобождает память."""
+        """Загружает модель, удаляет фон и освобождает сессию."""
 
         model = self._model_registry.get_model(model_name)
 
@@ -49,7 +49,7 @@ class BackgroundRemover:
 
         try:
             logger.info(
-                "Загрузка модели перед обработкой: %s",
+                "Загрузка модели: %s",
                 model.unique_name,
             )
 
@@ -58,7 +58,7 @@ class BackgroundRemover:
             )
 
             logger.info(
-                "Модель загружена, начало инференса: %s",
+                "Модель загружена, запускаю инференс: %s",
                 model.unique_name,
             )
 
@@ -71,20 +71,16 @@ class BackgroundRemover:
 
         finally:
             logger.info(
-                "Выгрузка модели после обработки: %s",
+                "Выгрузка модели: %s",
                 model.unique_name,
             )
 
-            # Удаляем ссылку на ONNX-сессию.
             session = None
-
-            # Удаляем локальную ссылку на исходное изображение.
-            del image_bytes
 
             self._release_unused_memory()
 
             logger.info(
-                "Очистка памяти завершена: %s",
+                "Очистка памяти после модели завершена: %s",
                 model.unique_name,
             )
 
@@ -92,7 +88,7 @@ class BackgroundRemover:
     def _release_unused_memory() -> None:
         """
         Запускает сборщик мусора Python и пытается вернуть
-        освобождённые страницы памяти операционной системе.
+        освобождённые страницы heap операционной системе.
         """
 
         collected_objects = gc.collect()
@@ -100,7 +96,7 @@ class BackgroundRemover:
         if not sys.platform.startswith("linux"):
             logger.debug(
                 "GC завершён: collected=%s. "
-                "malloc_trim недоступен вне Linux",
+                "malloc_trim пропущен: платформа не Linux",
                 collected_objects,
             )
             return

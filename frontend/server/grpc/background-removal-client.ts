@@ -10,6 +10,13 @@ import { fileURLToPath } from "node:url";
 
 const MAX_GRPC_MESSAGE_SIZE = 64 * 1024 * 1024;
 
+export type GrpcJobStatus =
+    | "JOB_STATUS_UNSPECIFIED"
+    | "JOB_STATUS_QUEUED"
+    | "JOB_STATUS_PROCESSING"
+    | "JOB_STATUS_COMPLETED"
+    | "JOB_STATUS_FAILED";
+
 export interface GrpcModelInfo {
     unique_name: string;
     display_name: string;
@@ -20,15 +27,37 @@ export interface GetModelsResponse {
     models: GrpcModelInfo[];
 }
 
-export interface RemoveBackgroundResponse {
+export interface SubmitJobResponse {
+    job_id: string;
+    status: GrpcJobStatus;
+    queue_position: number;
+}
+
+export interface GetJobStatusResponse {
+    job_id: string;
+    status: GrpcJobStatus;
+    queue_position: number;
+    error_message: string;
+    processing_time_ms: string;
+}
+
+export interface GetJobResultResponse {
     image: Buffer;
     model_name: string;
     processing_time_ms: string;
 }
 
-interface RemoveBackgroundRequest {
+interface SubmitJobRequest {
     image: Buffer;
     model_name: string;
+}
+
+interface GetJobStatusRequest {
+    job_id: string;
+}
+
+interface GetJobResultRequest {
+    job_id: string;
 }
 
 interface BackgroundRemovalClient extends Client {
@@ -40,11 +69,27 @@ interface BackgroundRemovalClient extends Client {
         ) => void,
     ): void;
 
-    RemoveBackground(
-        request: RemoveBackgroundRequest,
+    SubmitJob(
+        request: SubmitJobRequest,
         callback: (
             error: ServiceError | null,
-            response: RemoveBackgroundResponse,
+            response: SubmitJobResponse,
+        ) => void,
+    ): void;
+
+    GetJobStatus(
+        request: GetJobStatusRequest,
+        callback: (
+            error: ServiceError | null,
+            response: GetJobStatusResponse,
+        ) => void,
+    ): void;
+
+    GetJobResult(
+        request: GetJobResultRequest,
+        callback: (
+            error: ServiceError | null,
+            response: GetJobResultResponse,
         ) => void,
     ): void;
 }
@@ -111,10 +156,10 @@ export function getBackgroundRemovalClient(): BackgroundRemovalClient {
 }
 
 export function getGrpcModels(): Promise<GetModelsResponse> {
-    const client = getBackgroundRemovalClient();
+    const grpcClient = getBackgroundRemovalClient();
 
     return new Promise((resolve, reject) => {
-        client.GetModels({}, (error, response) => {
+        grpcClient.GetModels({}, (error, response) => {
             if (error) {
                 reject(error);
                 return;
@@ -125,17 +170,61 @@ export function getGrpcModels(): Promise<GetModelsResponse> {
     });
 }
 
-export function removeBackgroundGrpc(
+export function submitJobGrpc(
     image: Buffer,
     modelName: string,
-): Promise<RemoveBackgroundResponse> {
-    const client = getBackgroundRemovalClient();
+): Promise<SubmitJobResponse> {
+    const grpcClient = getBackgroundRemovalClient();
 
     return new Promise((resolve, reject) => {
-        client.RemoveBackground(
+        grpcClient.SubmitJob(
             {
                 image,
                 model_name: modelName,
+            },
+            (error, response) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                resolve(response);
+            },
+        );
+    });
+}
+
+export function getJobStatusGrpc(
+    jobId: string,
+): Promise<GetJobStatusResponse> {
+    const grpcClient = getBackgroundRemovalClient();
+
+    return new Promise((resolve, reject) => {
+        grpcClient.GetJobStatus(
+            {
+                job_id: jobId,
+            },
+            (error, response) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                resolve(response);
+            },
+        );
+    });
+}
+
+export function getJobResultGrpc(
+    jobId: string,
+): Promise<GetJobResultResponse> {
+    const grpcClient = getBackgroundRemovalClient();
+
+    return new Promise((resolve, reject) => {
+        grpcClient.GetJobResult(
+            {
+                job_id: jobId,
             },
             (error, response) => {
                 if (error) {

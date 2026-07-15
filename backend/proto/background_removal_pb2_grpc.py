@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + ' but the generated code in proto/background_removal_pb2_grpc.py depends on'
+        + ' but the generated code in background_removal_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,13 +36,23 @@ class BackgroundRemovalServiceStub:
         """
         self.GetModels = channel.unary_unary(
                 '/background_removal.v1.BackgroundRemovalService/GetModels',
-                request_serializer=proto_dot_background__removal__pb2.GetModelsRequest.SerializeToString,
-                response_deserializer=proto_dot_background__removal__pb2.GetModelsResponse.FromString,
+                request_serializer=background__removal__pb2.GetModelsRequest.SerializeToString,
+                response_deserializer=background__removal__pb2.GetModelsResponse.FromString,
                 _registered_method=True)
-        self.RemoveBackground = channel.unary_unary(
-                '/background_removal.v1.BackgroundRemovalService/RemoveBackground',
-                request_serializer=proto_dot_background__removal__pb2.RemoveBackgroundRequest.SerializeToString,
-                response_deserializer=proto_dot_background__removal__pb2.RemoveBackgroundResponse.FromString,
+        self.SubmitJob = channel.unary_unary(
+                '/background_removal.v1.BackgroundRemovalService/SubmitJob',
+                request_serializer=background__removal__pb2.SubmitJobRequest.SerializeToString,
+                response_deserializer=background__removal__pb2.SubmitJobResponse.FromString,
+                _registered_method=True)
+        self.GetJobStatus = channel.unary_unary(
+                '/background_removal.v1.BackgroundRemovalService/GetJobStatus',
+                request_serializer=background__removal__pb2.GetJobStatusRequest.SerializeToString,
+                response_deserializer=background__removal__pb2.GetJobStatusResponse.FromString,
+                _registered_method=True)
+        self.GetJobResult = channel.unary_unary(
+                '/background_removal.v1.BackgroundRemovalService/GetJobResult',
+                request_serializer=background__removal__pb2.GetJobResultRequest.SerializeToString,
+                response_deserializer=background__removal__pb2.GetJobResultResponse.FromString,
                 _registered_method=True)
 
 
@@ -55,7 +65,19 @@ class BackgroundRemovalServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def RemoveBackground(self, request, context):
+    def SubmitJob(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetJobStatus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetJobResult(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -66,13 +88,23 @@ def add_BackgroundRemovalServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetModels': grpc.unary_unary_rpc_method_handler(
                     servicer.GetModels,
-                    request_deserializer=proto_dot_background__removal__pb2.GetModelsRequest.FromString,
-                    response_serializer=proto_dot_background__removal__pb2.GetModelsResponse.SerializeToString,
+                    request_deserializer=background__removal__pb2.GetModelsRequest.FromString,
+                    response_serializer=background__removal__pb2.GetModelsResponse.SerializeToString,
             ),
-            'RemoveBackground': grpc.unary_unary_rpc_method_handler(
-                    servicer.RemoveBackground,
-                    request_deserializer=proto_dot_background__removal__pb2.RemoveBackgroundRequest.FromString,
-                    response_serializer=proto_dot_background__removal__pb2.RemoveBackgroundResponse.SerializeToString,
+            'SubmitJob': grpc.unary_unary_rpc_method_handler(
+                    servicer.SubmitJob,
+                    request_deserializer=background__removal__pb2.SubmitJobRequest.FromString,
+                    response_serializer=background__removal__pb2.SubmitJobResponse.SerializeToString,
+            ),
+            'GetJobStatus': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetJobStatus,
+                    request_deserializer=background__removal__pb2.GetJobStatusRequest.FromString,
+                    response_serializer=background__removal__pb2.GetJobStatusResponse.SerializeToString,
+            ),
+            'GetJobResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetJobResult,
+                    request_deserializer=background__removal__pb2.GetJobResultRequest.FromString,
+                    response_serializer=background__removal__pb2.GetJobResultResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -100,8 +132,8 @@ class BackgroundRemovalService:
             request,
             target,
             '/background_removal.v1.BackgroundRemovalService/GetModels',
-            proto_dot_background__removal__pb2.GetModelsRequest.SerializeToString,
-            proto_dot_background__removal__pb2.GetModelsResponse.FromString,
+            background__removal__pb2.GetModelsRequest.SerializeToString,
+            background__removal__pb2.GetModelsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -113,7 +145,7 @@ class BackgroundRemovalService:
             _registered_method=True)
 
     @staticmethod
-    def RemoveBackground(request,
+    def SubmitJob(request,
             target,
             options=(),
             channel_credentials=None,
@@ -126,9 +158,63 @@ class BackgroundRemovalService:
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/background_removal.v1.BackgroundRemovalService/RemoveBackground',
-            proto_dot_background__removal__pb2.RemoveBackgroundRequest.SerializeToString,
-            proto_dot_background__removal__pb2.RemoveBackgroundResponse.FromString,
+            '/background_removal.v1.BackgroundRemovalService/SubmitJob',
+            background__removal__pb2.SubmitJobRequest.SerializeToString,
+            background__removal__pb2.SubmitJobResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetJobStatus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/background_removal.v1.BackgroundRemovalService/GetJobStatus',
+            background__removal__pb2.GetJobStatusRequest.SerializeToString,
+            background__removal__pb2.GetJobStatusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetJobResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/background_removal.v1.BackgroundRemovalService/GetJobResult',
+            background__removal__pb2.GetJobResultRequest.SerializeToString,
+            background__removal__pb2.GetJobResultResponse.FromString,
             options,
             channel_credentials,
             insecure,

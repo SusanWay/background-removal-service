@@ -3,10 +3,17 @@ syntax = "proto3";
 package background_removal.v1;
 
 service BackgroundRemovalService {
-  rpc GetModels(GetModelsRequest) returns (GetModelsResponse);
+  rpc GetModels(GetModelsRequest)
+      returns (GetModelsResponse);
 
-  rpc RemoveBackground(RemoveBackgroundRequest)
-      returns (RemoveBackgroundResponse);
+  rpc SubmitJob(SubmitJobRequest)
+      returns (SubmitJobResponse);
+
+  rpc GetJobStatus(GetJobStatusRequest)
+      returns (GetJobStatusResponse);
+
+  rpc GetJobResult(GetJobResultRequest)
+      returns (GetJobResultResponse);
 }
 
 message GetModelsRequest {}
@@ -21,12 +28,42 @@ message GetModelsResponse {
   repeated ModelInfo models = 1;
 }
 
-message RemoveBackgroundRequest {
+enum JobStatus {
+  JOB_STATUS_UNSPECIFIED = 0;
+  JOB_STATUS_QUEUED = 1;
+  JOB_STATUS_PROCESSING = 2;
+  JOB_STATUS_COMPLETED = 3;
+  JOB_STATUS_FAILED = 4;
+}
+
+message SubmitJobRequest {
   bytes image = 1;
   string model_name = 2;
 }
 
-message RemoveBackgroundResponse {
+message SubmitJobResponse {
+  string job_id = 1;
+  JobStatus status = 2;
+  uint32 queue_position = 3;
+}
+
+message GetJobStatusRequest {
+  string job_id = 1;
+}
+
+message GetJobStatusResponse {
+  string job_id = 1;
+  JobStatus status = 2;
+  uint32 queue_position = 3;
+  string error_message = 4;
+  uint64 processing_time_ms = 5;
+}
+
+message GetJobResultRequest {
+  string job_id = 1;
+}
+
+message GetJobResultResponse {
   bytes image = 1;
   string model_name = 2;
   uint64 processing_time_ms = 3;

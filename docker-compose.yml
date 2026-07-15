@@ -24,14 +24,41 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: "3000"
       NUXT_GRPC_ADDRESS: backend:50051
       GRPC_PROTO_PATH: /app/proto/background_removal.proto
+    networks:
+      - background-removal-network
+
+  nginx:
+    image: nginx:1.28-alpine
+    restart: unless-stopped
+    depends_on:
+      frontend:
+        condition: service_healthy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://127.0.0.1/nginx-health"
+        ]
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
     networks:
       - background-removal-network
 

@@ -1,11 +1,20 @@
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_IMAGE_SIZE = 4096;
+const POLLING_INTERVAL_MS = 1500;
 
 const ALLOWED_TYPES = new Set([
     "image/jpeg",
     "image/png",
     "image/webp",
 ]);
+
+export type ProcessingStatus =
+    | "idle"
+    | "submitting"
+    | "queued"
+    | "processing"
+    | "completed"
+    | "failed";
 
 interface ImageDimensions {
     width: number;
@@ -15,6 +24,30 @@ interface ImageDimensions {
 interface ApiErrorResponse {
     statusMessage?: string;
     message?: string;
+}
+
+interface SubmitJobResponse {
+    jobId: string;
+    status:
+        | "queued"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "unknown";
+    queuePosition: number;
+}
+
+interface JobStatusResponse {
+    jobId: string;
+    status:
+        | "queued"
+        | "processing"
+        | "completed"
+        | "failed"
+        | "unknown";
+    queuePosition: number;
+    errorMessage: string | null;
+    processingTimeMs: number;
 }
 
 function getImageDimensions(
@@ -45,6 +78,12 @@ function getImageDimensions(
     });
 }
 
+function delay(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => {
+        window.setTimeout(resolve, milliseconds);
+    });
+}
+
 export const useProcessingStore = defineStore(
     "processing",
     () => {
@@ -52,12 +91,17 @@ export const useProcessingStore = defineStore(
         const sourcePreviewUrl = ref<string | null>(null);
         const resultUrl = ref<string | null>(null);
 
+        const status = ref<ProcessingStatus>("idle");
         const isValidating = ref(false);
-        const isProcessing = ref(false);
+
+        const jobId = ref<string | null>(null);
+        const queuePosition = ref<number | null>(null);
 
         const error = ref<string | null>(null);
         const processingTimeMs = ref<number | null>(null);
         const processedModelName = ref<string | null>(null);
+
+        let pollingToken = 0;
 
         const hasSource = computed(() => {
             return sourceFile.value !== null;
@@ -65,6 +109,105 @@ export const useProcessingStore = defineStore(
 
         const hasResult = computed(() => {
             return resultUrl.value !== null;
+        });
+
+        const isSubmitting = computed(() => {
+            return status.value === "submitting";
+        });
+
+        const isQueued = computed(() => {
+            return status.value === "queued";
+        });
+
+        const isProcessing = computed(() => {
+            return (
+                status.value === "submitting" ||
+                status.value === "queued" ||
+                status.value === "processing"
+            );
+        });
+
+        const isInferenceRunning = computed(() => {
+            return status.value === "processing";
+        });
+
+        const statusTitle = computed(() => {
+            if (status.value === "submitting") {
+                return "Добавляем изображение в очередь";
+            }
+
+            if (status.value === "queued") {
+                return "Изображение ожидает обработки";
+            }
+
+            if (status.value === "processing") {
+                return "Удаляем фон";
+            }
+
+            if (status.value === "failed") {
+                return "Не удалось обработать изображение";
+            }
+
+            return null;
+        });
+
+        const statusDescription = computed(() => {
+            if (status.value === "submitting") {
+                return "Отправляем изображение на сервер";
+            }
+
+            if (status.value === "queued") {
+                if (
+                    queuePosition.value !== null &&
+                    queuePosition.value > 0
+                ) {
+                    return (
+                        `Ваше место в очереди: ` +
+                        `${queuePosition.value}`
+                    );
+                }
+
+                return "Обработка начнётся автоматически";
+            }
+
+            if (status.value === "processing") {
+                return (
+                    "Модель загружается и обрабатывает " +
+                    "изображение"
+                );
+            }
+
+            if (status.value === "failed") {
+                return error.value;
+            }
+
+            return null;
+        });
+
+        const processButtonText = computed(() => {
+            if (status.value === "submitting") {
+                return "Добавляем в очередь...";
+            }
+
+            if (status.value === "queued") {
+                if (
+                    queuePosition.value !== null &&
+                    queuePosition.value > 0
+                ) {
+                    return (
+                        `В очереди: ` +
+                        `${queuePosition.value}`
+                    );
+                }
+
+                return "В очереди...";
+            }
+
+            if (status.value === "processing") {
+                return "Удаляем фон...";
+            }
+
+            return "Удалить фон";
         });
 
         function revokeSourcePreview(): void {
@@ -92,7 +235,22 @@ export const useProcessingStore = defineStore(
             processedModelName.value = null;
         }
 
-        async function setSourceFile(file: File): Promise<boolean> {
+        function cancelPolling(): void {
+            pollingToken += 1;
+        }
+
+        function resetJobState(): void {
+            cancelPolling();
+
+            status.value = "idle";
+            jobId.value = null;
+            queuePosition.value = null;
+            error.value = null;
+        }
+
+        async function setSourceFile(
+            file: File,
+        ): Promise<boolean> {
             error.value = null;
             isValidating.value = true;
 
@@ -109,7 +267,8 @@ export const useProcessingStore = defineStore(
                     );
                 }
 
-                const dimensions = await getImageDimensions(file);
+                const dimensions =
+                    await getImageDimensions(file);
 
                 if (
                     dimensions.width > MAX_IMAGE_SIZE ||
@@ -120,11 +279,13 @@ export const useProcessingStore = defineStore(
                     );
                 }
 
+                resetJobState();
                 revokeSourcePreview();
                 clearResult();
 
                 sourceFile.value = file;
-                sourcePreviewUrl.value = URL.createObjectURL(file);
+                sourcePreviewUrl.value =
+                    URL.createObjectURL(file);
 
                 return true;
             } catch (validationError) {
@@ -143,12 +304,14 @@ export const useProcessingStore = defineStore(
             const modelsStore = useModelsStore();
 
             if (!sourceFile.value) {
-                error.value = "Сначала выберите изображение";
+                error.value =
+                    "Сначала выберите изображение";
                 return;
             }
 
             if (!modelsStore.selectedModelName) {
-                error.value = "Выберите модель обработки";
+                error.value =
+                    "Выберите модель обработки";
                 return;
             }
 
@@ -156,88 +319,271 @@ export const useProcessingStore = defineStore(
                 return;
             }
 
-            isProcessing.value = true;
-            error.value = null;
-
             clearResult();
+            resetJobState();
+
+            const currentPollingToken = pollingToken;
+
+            status.value = "submitting";
 
             const formData = new FormData();
 
-            formData.append("image", sourceFile.value);
+            formData.append(
+                "image",
+                sourceFile.value,
+            );
+
             formData.append(
                 "modelName",
                 modelsStore.selectedModelName,
             );
 
             try {
-                const response = await fetch(
-                    "/api/remove-background",
-                    {
+                const response =
+                    await fetch("/api/jobs", {
                         method: "POST",
                         body: formData,
-                    },
-                );
+                    });
 
                 if (!response.ok) {
-                    let errorMessage =
-                        "Не удалось обработать изображение";
-
-                    try {
-                        const responseError =
-                            (await response.json()) as ApiErrorResponse;
-
-                        errorMessage =
-                            responseError.statusMessage ??
-                            responseError.message ??
-                            errorMessage;
-                    } catch {
-                        // Сервер вернул ошибку не в JSON-формате.
-                    }
-
-                    throw new Error(errorMessage);
-                }
-
-                const resultBlob = await response.blob();
-
-                if (!resultBlob.size) {
                     throw new Error(
-                        "Сервис вернул пустой результат",
+                        await getResponseErrorMessage(
+                            response,
+                        ),
                     );
                 }
 
-                resultUrl.value = URL.createObjectURL(resultBlob);
-
-                processingTimeMs.value = Number(
-                    response.headers.get("X-Processing-Time-Ms"),
-                );
+                const submitResult =
+                    (await response.json()) as SubmitJobResponse;
 
                 if (
-                    processingTimeMs.value !== null &&
-                    !Number.isFinite(processingTimeMs.value)
+                    currentPollingToken !== pollingToken
                 ) {
-                    processingTimeMs.value = null;
+                    return;
                 }
 
-                processedModelName.value =
-                    response.headers.get("X-Model-Name");
+                jobId.value = submitResult.jobId;
+                queuePosition.value =
+                    submitResult.queuePosition;
+
+                status.value =
+                    submitResult.status === "processing"
+                        ? "processing"
+                        : "queued";
+
+                await pollJobStatus(
+                    submitResult.jobId,
+                    currentPollingToken,
+                );
             } catch (processingError) {
-                error.value =
-                    processingError instanceof Error
-                        ? processingError.message
-                        : "Не удалось обработать изображение";
-            } finally {
-                isProcessing.value = false;
+                if (
+                    currentPollingToken !== pollingToken
+                ) {
+                    return;
+                }
+
+                setProcessingError(processingError);
             }
         }
 
+        async function pollJobStatus(
+            currentJobId: string,
+            currentPollingToken: number,
+        ): Promise<void> {
+            while (
+                currentPollingToken === pollingToken &&
+                jobId.value === currentJobId
+                ) {
+                try {
+                    const response = await fetch(
+                        `/api/jobs/${currentJobId}`,
+                        {
+                            method: "GET",
+                            headers: {
+                                Accept: "application/json",
+                            },
+                        },
+                    );
+
+                    if (!response.ok) {
+                        throw new Error(
+                            await getResponseErrorMessage(
+                                response,
+                            ),
+                        );
+                    }
+
+                    const job =
+                        (await response.json()) as JobStatusResponse;
+
+                    if (
+                        currentPollingToken !== pollingToken
+                    ) {
+                        return;
+                    }
+
+                    queuePosition.value =
+                        job.queuePosition;
+
+                    if (job.status === "queued") {
+                        status.value = "queued";
+                    } else if (
+                        job.status === "processing"
+                    ) {
+                        status.value = "processing";
+                    } else if (
+                        job.status === "completed"
+                    ) {
+                        processingTimeMs.value =
+                            job.processingTimeMs;
+
+                        await loadJobResult(
+                            currentJobId,
+                            currentPollingToken,
+                        );
+
+                        return;
+                    } else if (
+                        job.status === "failed"
+                    ) {
+                        status.value = "failed";
+                        error.value =
+                            job.errorMessage ||
+                            (
+                                "Не удалось обработать " +
+                                "изображение"
+                            );
+
+                        return;
+                    } else {
+                        throw new Error(
+                            "Сервис вернул неизвестный статус задачи",
+                        );
+                    }
+
+                    await delay(
+                        POLLING_INTERVAL_MS,
+                    );
+                } catch (pollingError) {
+                    if (
+                        currentPollingToken !== pollingToken
+                    ) {
+                        return;
+                    }
+
+                    setProcessingError(pollingError);
+                    return;
+                }
+            }
+        }
+
+        async function loadJobResult(
+            currentJobId: string,
+            currentPollingToken: number,
+        ): Promise<void> {
+            const response = await fetch(
+                `/api/jobs/${currentJobId}/result`,
+                {
+                    method: "GET",
+                },
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    await getResponseErrorMessage(response),
+                );
+            }
+
+            const resultBlob = await response.blob();
+
+            if (!resultBlob.size) {
+                throw new Error(
+                    "Сервис вернул пустой результат",
+                );
+            }
+
+            if (
+                currentPollingToken !== pollingToken
+            ) {
+                return;
+            }
+
+            revokeResult();
+
+            resultUrl.value =
+                URL.createObjectURL(resultBlob);
+
+            const processingTimeHeader =
+                response.headers.get(
+                    "X-Processing-Time-Ms",
+                );
+
+            if (processingTimeHeader) {
+                const parsedProcessingTime =
+                    Number(processingTimeHeader);
+
+                processingTimeMs.value =
+                    Number.isFinite(
+                        parsedProcessingTime,
+                    )
+                        ? parsedProcessingTime
+                        : processingTimeMs.value;
+            }
+
+            processedModelName.value =
+                response.headers.get("X-Model-Name");
+
+            queuePosition.value = null;
+            status.value = "completed";
+        }
+
+        async function getResponseErrorMessage(
+            response: Response,
+        ): Promise<string> {
+            let errorMessage =
+                "Не удалось обработать изображение";
+
+            try {
+                const responseError =
+                    (await response.json()) as ApiErrorResponse;
+
+                errorMessage =
+                    responseError.statusMessage ??
+                    responseError.message ??
+                    errorMessage;
+            } catch {
+                // Сервер вернул ошибку не в JSON-формате.
+            }
+
+            return errorMessage;
+        }
+
+        function setProcessingError(
+            processingError: unknown,
+        ): void {
+            status.value = "failed";
+            queuePosition.value = null;
+
+            error.value =
+                processingError instanceof Error
+                    ? processingError.message
+                    : "Не удалось обработать изображение";
+        }
+
         function reset(): void {
+            cancelPolling();
+
             revokeSourcePreview();
             clearResult();
 
             sourceFile.value = null;
             error.value = null;
+
+            status.value = "idle";
+            jobId.value = null;
+            queuePosition.value = null;
+
             isValidating.value = false;
-            isProcessing.value = false;
         }
 
         return {
@@ -245,8 +591,15 @@ export const useProcessingStore = defineStore(
             sourcePreviewUrl,
             resultUrl,
 
+            status,
+            jobId,
+            queuePosition,
+
             isValidating,
+            isSubmitting,
+            isQueued,
             isProcessing,
+            isInferenceRunning,
 
             error,
             processingTimeMs,
@@ -254,6 +607,10 @@ export const useProcessingStore = defineStore(
 
             hasSource,
             hasResult,
+
+            statusTitle,
+            statusDescription,
+            processButtonText,
 
             setSourceFile,
             processImage,

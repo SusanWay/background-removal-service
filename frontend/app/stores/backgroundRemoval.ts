@@ -1,5 +1,3 @@
-import { defineStore } from "pinia";
-
 const POLLING_INTERVAL_MS = 1500;
 
 export type BackgroundRemovalStatus =

@@ -4,15 +4,20 @@ const modelsStore = useModelsStore();
 
 const {
   resultUrl,
+  status,
   isProcessing,
   processingTimeMs,
   processedModelName,
+  queuePosition,
+  statusTitle,
+  statusDescription,
 } = storeToRefs(processingStore);
 
 const processedModel = computed(() => {
   return modelsStore.models.find(
       (model) =>
-          model.uniqueName === processedModelName.value,
+          model.uniqueName ===
+          processedModelName.value,
   );
 });
 
@@ -25,7 +30,20 @@ const formattedProcessingTime = computed(() => {
     return `${processingTimeMs.value} мс`;
   }
 
-  return `${(processingTimeMs.value / 1000).toFixed(1)} сек`;
+  return `${(
+      processingTimeMs.value / 1000
+  ).toFixed(1)} сек`;
+});
+
+const isQueued = computed(() => {
+  return status.value === "queued";
+});
+
+const isActivelyProcessing = computed(() => {
+  return (
+      status.value === "submitting" ||
+      status.value === "processing"
+  );
 });
 
 function downloadResult(): void {
@@ -65,17 +83,42 @@ function downloadResult(): void {
     <div class="result-panel__body">
       <div class="result-panel__preview">
         <div
-            v-if="isProcessing"
+            v-if="isQueued"
             class="result-panel__placeholder"
         >
           <span class="result-panel__loader" />
 
           <h3 class="result-panel__placeholder-title">
-            Удаляем фон
+            {{ statusTitle }}
           </h3>
 
           <p class="result-panel__placeholder-description">
-            Обработка может занять некоторое время
+            {{ statusDescription }}
+          </p>
+
+          <span
+              v-if="
+                queuePosition !== null &&
+                queuePosition > 0
+              "
+              class="result-panel__queue-position"
+          >
+            {{ queuePosition }}
+          </span>
+        </div>
+
+        <div
+            v-else-if="isActivelyProcessing"
+            class="result-panel__placeholder"
+        >
+          <span class="result-panel__loader" />
+
+          <h3 class="result-panel__placeholder-title">
+            {{ statusTitle }}
+          </h3>
+
+          <p class="result-panel__placeholder-description">
+            {{ statusDescription }}
           </p>
         </div>
 
@@ -133,6 +176,20 @@ function downloadResult(): void {
         </span>
 
         <span
+            v-if="isQueued"
+            class="result-panel__information-item"
+        >
+          Ожидание в очереди
+        </span>
+
+        <span
+            v-else-if="isProcessing"
+            class="result-panel__information-item"
+        >
+          Выполняется обработка
+        </span>
+
+        <span
             v-if="processedModel"
             class="result-panel__information-item"
         >
@@ -147,7 +204,7 @@ function downloadResult(): void {
         </span>
 
         <span
-            v-if="!resultUrl"
+            v-if="!resultUrl && !isProcessing"
             class="result-panel__information-item"
         >
           Формат результата: PNG

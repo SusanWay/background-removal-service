@@ -8,6 +8,7 @@ const {
   isProcessing,
   error,
   hasSource,
+  processButtonText,
 } = storeToRefs(processingStore);
 
 const fileInput = ref<HTMLInputElement>();
@@ -21,7 +22,9 @@ function openFileDialog(): void {
   fileInput.value?.click();
 }
 
-async function handleFile(file?: File): Promise<void> {
+async function handleFile(
+    file?: File,
+): Promise<void> {
   if (!file) {
     return;
   }
@@ -36,7 +39,8 @@ async function handleFile(file?: File): Promise<void> {
 async function handleInputChange(
     event: Event,
 ): Promise<void> {
-  const input = event.target as HTMLInputElement;
+  const input =
+      event.target as HTMLInputElement;
 
   await handleFile(input.files?.[0]);
 }
@@ -47,9 +51,14 @@ function handleDragEnter(): void {
   }
 }
 
-function handleDragLeave(event: DragEvent): void {
-  const currentTarget = event.currentTarget as HTMLElement;
-  const relatedTarget = event.relatedTarget as Node | null;
+function handleDragLeave(
+    event: DragEvent,
+): void {
+  const currentTarget =
+      event.currentTarget as HTMLElement;
+
+  const relatedTarget =
+      event.relatedTarget as Node | null;
 
   if (
       relatedTarget &&
@@ -61,14 +70,18 @@ function handleDragLeave(event: DragEvent): void {
   isDragging.value = false;
 }
 
-async function handleDrop(event: DragEvent): Promise<void> {
+async function handleDrop(
+    event: DragEvent,
+): Promise<void> {
   isDragging.value = false;
 
   if (isProcessing.value) {
     return;
   }
 
-  await handleFile(event.dataTransfer?.files[0]);
+  await handleFile(
+      event.dataTransfer?.files[0],
+  );
 }
 </script>
 
@@ -96,17 +109,20 @@ async function handleDrop(event: DragEvent): Promise<void> {
           class="upload-panel__input"
           type="file"
           accept="image/jpeg,image/png,image/webp"
+          :disabled="isProcessing"
           @change="handleInputChange"
       >
 
       <div
           class="upload-panel__dropzone"
           :class="{
-          'upload-panel__dropzone--active': isDragging,
-          'upload-panel__dropzone--filled': hasSource,
-          'upload-panel__dropzone--disabled':
-            isProcessing,
-        }"
+            'upload-panel__dropzone--active':
+              isDragging,
+            'upload-panel__dropzone--filled':
+              hasSource,
+            'upload-panel__dropzone--disabled':
+              isProcessing,
+          }"
           @dragenter.prevent="handleDragEnter"
           @dragover.prevent="handleDragEnter"
           @dragleave.prevent="handleDragLeave"
@@ -116,7 +132,10 @@ async function handleDrop(event: DragEvent): Promise<void> {
           <img
               class="upload-panel__preview"
               :src="sourcePreviewUrl"
-              :alt="sourceFile?.name ?? 'Исходное изображение'"
+              :alt="
+                sourceFile?.name ??
+                'Исходное изображение'
+              "
           >
 
           <div class="upload-panel__preview-overlay">
@@ -158,7 +177,10 @@ async function handleDrop(event: DragEvent): Promise<void> {
           <button
               class="upload-panel__button"
               type="button"
-              :disabled="isValidating"
+              :disabled="
+                isValidating ||
+                isProcessing
+              "
               @click="openFileDialog"
           >
             {{
@@ -182,7 +204,10 @@ async function handleDrop(event: DragEvent): Promise<void> {
           v-if="hasSource"
           class="upload-panel__process-button"
           type="button"
-          :disabled="isProcessing || isValidating"
+          :disabled="
+            isProcessing ||
+            isValidating
+          "
           @click="processingStore.processImage"
       >
         <span
@@ -190,11 +215,7 @@ async function handleDrop(event: DragEvent): Promise<void> {
             class="upload-panel__spinner"
         />
 
-        {{
-          isProcessing
-              ? "Удаляем фон..."
-              : "Удалить фон"
-        }}
+        {{ processButtonText }}
       </button>
 
       <div class="upload-panel__requirements">

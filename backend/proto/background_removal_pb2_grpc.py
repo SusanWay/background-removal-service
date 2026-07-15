@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from proto import background_removal_pb2 as proto_dot_background__removal__pb2
+from proto import background_removal_pb2 as background__removal__pb2
 
 GRPC_GENERATED_VERSION = '1.82.1'
 GRPC_VERSION = grpc.__version__

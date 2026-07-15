@@ -1,0 +1,64 @@
+@use "../variables" as *;
+
+.app-header {
+  position: relative;
+  z-index: 10;
+  border-bottom: 1px solid $color-border-light;
+  background: rgb(255 255 255 / 85%);
+  backdrop-filter: blur(16px);
+
+  &__container {
+    display: flex;
+    min-height: 72px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__logo-icon {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: $color-primary;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 800;
+    place-items: center;
+  }
+
+  &__logo-text {
+    font-size: 20px;
+    font-weight: 750;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $color-text-secondary;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  &__status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-success;
+    box-shadow: 0 0 0 4px rgb(34 160 107 / 12%);
+  }
+}
+
+@media (width <= 600px) {
+  .app-header {
+    &__status {
+      font-size: 0;
+    }
+  }
+}

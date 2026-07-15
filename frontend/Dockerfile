@@ -1,7 +1,7 @@
 FROM node:24-alpine AS dependencies
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
 
 RUN corepack enable
 
@@ -14,14 +14,15 @@ RUN pnpm install --frozen-lockfile
 
 FROM node:24-alpine AS builder
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
 
 RUN corepack enable
 
 WORKDIR /app
 
 COPY --from=dependencies /app/node_modules ./node_modules
+
 COPY frontend/ ./
 COPY proto/ ./proto/
 

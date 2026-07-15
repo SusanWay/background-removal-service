@@ -21,7 +21,20 @@ async def run_grpc_server() -> None:
         model_registry=model_registry,
     )
 
-    grpc_server = grpc.aio.server()
+    max_message_size = 64 * 1024 * 1024
+
+    grpc_server = grpc.aio.server(
+        options=[
+            (
+                "grpc.max_receive_message_length",
+                max_message_size,
+            ),
+            (
+                "grpc.max_send_message_length",
+                max_message_size,
+            ),
+        ]
+    )
 
     service = BackgroundRemovalService(
         model_registry=model_registry,

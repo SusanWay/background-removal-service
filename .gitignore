@@ -1,48 +1,90 @@
-# Environment variables
+# IDE
+.idea/
+**/.idea/
+.vscode/
+**/.vscode/
+*.iml
+
+# Node.js / Nuxt
+node_modules/
+**/node_modules/
+
+.nuxt/
+**/.nuxt/
+
+.output/
+**/.output/
+
+dist/
+**/dist/
+
+.cache/
+**/.cache/
+
+.nitro/
+**/.nitro/
+
+# Логи Node.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# Python
+.venv/
+**/.venv/
+
+venv/
+**/venv/
+
+env/
+**/env/
+
+__pycache__/
+**/__pycache__/
+
+*.py[cod]
+*$py.class
+
+.pytest_cache/
+**/.pytest_cache/
+
+.mypy_cache/
+**/.mypy_cache/
+
+.ruff_cache/
+**/.ruff_cache/
+
+.coverage
+coverage.xml
+htmlcov/
+
+# Переменные окружения
 .env
 .env.*
 !.env.example
 
-# Python
-__pycache__/
-*.py[cod]
-*.pyd
-.venv/
-venv/
-env/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-dist/
-build/
-*.egg-info/
+# Результаты локальных тестов
+input/
+output/
+results/
 
-# ML models and data
-*.onnx
-*.pt
-*.pth
-*.ckpt
+# Модели и веса
 models/
-data/
+*.onnx
+*.pth
+*.pt
+*.ckpt
 
-# Node.js / Nuxt
-node_modules/
-.nuxt/
-.output/
-.nitro/
-.cache/
-coverage/
-*.tsbuildinfo
-
-# Logs
-*.log
-logs/
-
-# IDE and OS
-.idea/
-.vscode/
+# Системные файлы
 .DS_Store
+**/.DS_Store
 Thumbs.db
+**/Thumbs.db
 
+# Временные файлы
+*.tmp
+*.temp
+*.swp
+*.swo

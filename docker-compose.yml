@@ -1,0 +1,44 @@
+name: background-removal-service
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "50051"
+    environment:
+      PYTHONUNBUFFERED: "1"
+      U2NET_HOME: /models
+    volumes:
+      - model-cache:/models
+    networks:
+      - background-removal-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+      NUXT_GRPC_ADDRESS: backend:50051
+      GRPC_PROTO_PATH: /app/proto/background_removal.proto
+    networks:
+      - background-removal-network
+
+volumes:
+  model-cache:
+    name: background-removal-model-cache
+
+networks:
+  background-removal-network:
+    name: background-removal-network
+    driver: bridge

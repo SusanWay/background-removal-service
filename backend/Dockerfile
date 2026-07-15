@@ -6,13 +6,14 @@ ENV U2NET_HOME=/models
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY backend/requirements.txt ./requirements.txt
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install \
+    --no-cache-dir \
+    --disable-pip-version-check \
+    -r requirements.txt
 
-COPY . .
-
-VOLUME ["/models"]
+COPY backend/ ./
 
 EXPOSE 50051
 

@@ -2,7 +2,7 @@
   "models": [
     {
       "unique_name": "isnet-general-use",
-      "name": "Быстрая обработка",
+      "name": "Быстро",
       "description": "Быстрый режим для повседневных изображений с хорошим балансом качества и времени обработки.",
       "provider": "rembg",
       "provider_model_name": "isnet-general-use",
@@ -10,7 +10,7 @@
     },
     {
       "unique_name": "birefnet-general-lite",
-      "name": "Сбалансированная обработка",
+      "name": "Оптимально",
       "description": "Сбалансированный режим для сложных контуров и мелких деталей с умеренным временем обработки.",
       "provider": "rembg",
       "provider_model_name": "birefnet-general-lite",
@@ -18,7 +18,7 @@
     },
     {
       "unique_name": "birefnet-general",
-      "name": "Точная обработка",
+      "name": "Максимум",
       "description": "Наиболее качественный режим для сложных объектов и тонких деталей, требующий больше времени и памяти.",
       "provider": "rembg",
       "provider_model_name": "birefnet-general",
